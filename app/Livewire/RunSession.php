@@ -31,6 +31,20 @@ class RunSession extends Component
     public function refreshDashboard(): void
     {
         $this->session->refresh();
+        $this->autoStopIfExpired();
+    }
+
+    public function autoStop(): void
+    {
+        $this->session->refresh();
+        $this->autoStopIfExpired();
+    }
+
+    protected function autoStopIfExpired(): void
+    {
+        if ($this->session->isRunning() && $this->session->isExpired()) {
+            $this->stopQuiz();
+        }
     }
 
     public function startQuiz(): void
@@ -80,6 +94,10 @@ class RunSession extends Component
             'status' => QuizSession::STATUS_FINISHED,
             'ended_at' => now(),
         ]);
+
+        $this->session->participants()
+            ->whereNull('finished_at')
+            ->update(['finished_at' => now()]);
 
         broadcast(new QuizStopped(sessionId: $this->session->id));
     }

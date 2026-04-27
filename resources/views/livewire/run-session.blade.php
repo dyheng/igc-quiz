@@ -85,11 +85,13 @@
                     <div
                         x-data="countdown(@js($session->ends_at->toIso8601String()))"
                         x-init="start()"
+                        x-on:countdown-finished.window="$wire.autoStop()"
                         class="mt-2"
                     >
                         <p class="font-mono tabular-nums text-3xl md:text-4xl font-semibold tracking-tight" :class="{ 'text-rose-600': remaining < 10000, 'text-amber-600': remaining < 30000 && remaining >= 10000 }">
                             <span x-text="formatted"></span>
                         </p>
+                        <p class="mt-2 text-xs text-slate-500">Quiz akan otomatis berakhir saat waktu habis.</p>
                     </div>
                 </x-ui.card>
             @endif
@@ -160,6 +162,7 @@
         remaining: 0,
         formatted: '00:00',
         timer: null,
+        finished: false,
         start() {
             const tick = () => {
                 const ms = new Date(endsAtIso).getTime() - Date.now();
@@ -168,8 +171,10 @@
                 const m = Math.floor(totalSec / 60);
                 const s = totalSec % 60;
                 this.formatted = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
-                if (this.remaining <= 0 && this.timer) {
-                    clearInterval(this.timer);
+                if (this.remaining <= 0 && !this.finished) {
+                    this.finished = true;
+                    if (this.timer) clearInterval(this.timer);
+                    window.dispatchEvent(new CustomEvent('countdown-finished'));
                 }
             };
             tick();

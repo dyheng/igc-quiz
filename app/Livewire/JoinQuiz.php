@@ -55,6 +55,12 @@ class JoinQuiz extends Component
 
         broadcast(new ParticipantJoined($participant));
 
+        $this->dispatch('participant-joined', [
+            'code' => $this->session->code,
+            'id' => $participant->id,
+            'name' => $participant->name,
+        ]);
+
         return $this->redirectRoute('participant.play', [
             'code' => $this->session->code,
             'participant' => $participant->id,

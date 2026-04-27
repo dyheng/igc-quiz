@@ -211,6 +211,22 @@
         window.addEventListener('beforeunload', sendLeave);
     })();
 
+    // Cache identitas peserta selama 15 menit di device.
+    // Saat user reload / buka tab baru ke /q/{code}, mereka otomatis diarahkan
+    // kembali ke participant ini, tidak bisa daftar dengan nama baru.
+    (function () {
+        try {
+            const code = @js($session->code);
+            const key = 'igc-quiz:participant:' + code;
+            const ttlMs = 15 * 60 * 1000;
+            localStorage.setItem(key, JSON.stringify({
+                id: @js($participant->id),
+                name: @js($participant->name),
+                expiresAt: Date.now() + ttlMs,
+            }));
+        } catch (e) {}
+    })();
+
     Alpine.data('countdown', (endsAtIso) => ({
         remaining: 0,
         formatted: '00:00',

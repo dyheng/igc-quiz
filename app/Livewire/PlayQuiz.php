@@ -24,21 +24,21 @@ class PlayQuiz extends Component
     /** @var array<int, int|null> question_id => option_id */
     public array $answers = [];
 
-    public function mount(string $code, Participant $participant): void
+    public function mount(string $code, Participant $participant)
     {
         $this->session = QuizSession::where('code', $code)->firstOrFail()
             ->load(['quiz.questions.options']);
 
         if ($participant->quiz_session_id !== $this->session->id) {
-            abort(404);
+            return $this->redirectRoute('participant.join', ['code' => $code, 'reset' => 1], navigate: false);
+        }
+
+        $expected = session('participant_id_' . $this->session->id);
+        if ((int) $expected !== $participant->id) {
+            return $this->redirectRoute('participant.join', ['code' => $code, 'reset' => 1], navigate: false);
         }
 
         $this->participant = $participant;
-
-        $expected = session('participant_id_' . $this->session->id);
-        if ((int) $expected !== $this->participant->id) {
-            abort(403, 'Sesi peserta tidak valid.');
-        }
 
         $this->answers = $this->participant->answers()
             ->pluck('question_option_id', 'question_id')
@@ -65,7 +65,7 @@ class PlayQuiz extends Component
     public function selectOption(int $questionId, int $optionId): void
     {
         $this->session->refresh();
-        if (! $this->session->isRunning() || $this->participant->finished_at) {
+        if (! $this->session->isRunning() || $this->session->isExpired() || $this->participant->finished_at) {
             return;
         }
 
@@ -138,6 +138,10 @@ class PlayQuiz extends Component
     {
         $this->participant->refresh();
         if ($this->participant->finished_at) return 'finished';
+
+        if ($this->session->isRunning() && $this->session->isExpired()) {
+            return 'finished';
+        }
 
         return match ($this->session->status) {
             QuizSession::STATUS_WAITING => 'waiting',

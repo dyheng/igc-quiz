@@ -74,4 +74,9 @@ class QuizSession extends Model
     {
         return $this->status === self::STATUS_FINISHED;
     }
+
+    public function isExpired(): bool
+    {
+        return $this->ends_at !== null && now()->greaterThanOrEqualTo($this->ends_at);
+    }
 }
