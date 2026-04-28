@@ -1,12 +1,12 @@
 <div class="mx-auto max-w-2xl px-4 md:px-6 py-6 md:py-10">
-    @if ($this->state === 'waiting')
+    @if ($state === 'waiting')
         <div class="min-h-[calc(100vh-12rem)] flex flex-col items-center justify-center text-center" wire:poll.3s="refresh">
             <div class="w-14 h-14 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin"></div>
             <h1 class="mt-6 text-xl md:text-2xl font-semibold tracking-tight text-slate-900">Menunggu admin memulai…</h1>
             <p class="text-sm text-slate-500 mt-2">Halo, <span class="font-medium text-slate-700">{{ $participant->name }}</span>! Quiz akan segera dimulai.</p>
             <p class="text-xs text-slate-400 mt-6">Jangan tutup halaman ini.</p>
         </div>
-    @elseif ($this->state === 'running' && $current)
+    @elseif ($state === 'running' && $current)
         <div wire:poll.10s="refresh">
             {{-- Sticky header --}}
             <div class="sticky top-14 md:top-16 -mx-4 md:-mx-6 px-4 md:px-6 py-3 bg-white/95 backdrop-blur border-b border-slate-200 z-20">
@@ -120,7 +120,7 @@
                 </div>
             </x-ui.modal>
         </div>
-    @elseif ($this->state === 'finished' && $summary)
+    @elseif ($state === 'finished' && $summary)
         <div>
             <x-ui.card class="text-center">
                 <p class="label">Quiz Selesai</p>
