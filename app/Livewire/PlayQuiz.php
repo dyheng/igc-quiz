@@ -134,11 +134,9 @@ class PlayQuiz extends Component
         ));
     }
 
-    protected function resolveState(): string
+    public function getStateProperty(): string
     {
         $this->participant->refresh();
-        $this->session->refresh();
-
         if ($this->participant->finished_at) return 'finished';
 
         if ($this->session->isRunning() && $this->session->isExpired()) {
@@ -154,13 +152,12 @@ class PlayQuiz extends Component
 
     public function render()
     {
-        $state = $this->resolveState();
         $questions = $this->session->quiz->questions;
         $total = $questions->count();
         $current = $questions[$this->currentIndex] ?? null;
 
         $summary = null;
-        if ($state === 'finished') {
+        if ($this->state === 'finished') {
             $answered = $this->participant->answers()->with('option', 'question')->get();
             $correct = $answered->where('is_correct', true)->count();
             $wrong = $answered->where('is_correct', false)->count();
@@ -191,7 +188,6 @@ class PlayQuiz extends Component
         }
 
         return view('livewire.play-quiz', [
-            'state' => $state,
             'questions' => $questions,
             'totalQuestions' => $total,
             'current' => $current,
