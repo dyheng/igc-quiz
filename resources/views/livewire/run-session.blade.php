@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-6xl px-4 md:px-6 py-6 md:py-10" wire:poll.5s="refreshDashboard">
+<div class="mx-auto max-w-6xl px-4 md:px-6 py-6 md:py-10" wire:poll.30s="refreshDashboard">
     <x-ui.toast />
 
     <div class="mb-6 flex items-center gap-3">

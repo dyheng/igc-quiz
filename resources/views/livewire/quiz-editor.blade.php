@@ -47,7 +47,7 @@
                             @error('newQuestionText') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <div>
+<div>
                             <div class="flex items-center justify-between mb-2">
                                 <label class="block text-sm font-medium text-slate-700">Opsi Jawaban</label>
                                 <span class="text-xs text-slate-500">Pilih satu sebagai jawaban benar</span>

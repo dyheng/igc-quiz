@@ -99,21 +99,23 @@ class PlayQuiz extends Component
         ));
     }
 
-    public function next(): void
-    {
-        $total = $this->session->quiz->questions->count();
-        if ($this->currentIndex < $total - 1) {
-            $this->currentIndex++;
-        }
-    }
-
     /*
+     * next() dan prev() tidak lagi dipakai dari Blade — navigasi sepenuhnya
+     * ditangani Alpine.js (client-side, instant, nol HTTP request).
+     * Dipertahankan di sini sebagai fallback kalau suatu saat diperlukan via $wire.next().
+     *
      * [FORWARD-ONLY MODE]
-     * Method prev() dinonaktifkan sementara karena peserta tidak boleh
-     * mundur untuk mengubah jawaban saat admin menampilkan dashboard real-time.
-     * Untuk mengaktifkan kembali: uncomment method ini DAN uncomment blok tombol Prev
-     * di resources/views/livewire/play-quiz.blade.php.
+     * prev() di-comment karena peserta tidak boleh mundur saat admin menampilkan
+     * dashboard real-time. Uncomment jika ingin mengaktifkan navigasi dua arah.
      */
+    // public function next(): void
+    // {
+    //     $total = $this->session->quiz->questions->count();
+    //     if ($this->currentIndex < $total - 1) {
+    //         $this->currentIndex++;
+    //     }
+    // }
+
     // public function prev(): void
     // {
     //     if ($this->currentIndex > 0) {
