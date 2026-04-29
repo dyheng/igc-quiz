@@ -110,14 +110,20 @@ function buildScenarios() {
         },
 
         // C: Full flow join + answer — test DB + broadcast (butuh LOADTEST_SECRET)
-        // vus: jumlah user simultan. Mulai dari 20, naikkan perlahan.
-        // Dengan delay 5–15s antar soal, 20 VU ≈ beban 20 user nyata bersamaan.
+        // User masuk bertahap: 2/detik selama 30 detik = ~60 user total.
+        // Ini jauh lebih mirip kondisi nyata (tidak semua join 1 detik bersamaan).
         full_flow: {
-            executor: 'per-vu-iterations',
+            executor: 'ramping-arrival-rate',
             exec: 'scenarioFullFlow',
-            vus: 20,
-            iterations: 1,
-            maxDuration: '5m',
+            startRate: 0,
+            timeUnit: '1s',
+            preAllocatedVUs: 30,
+            maxVUs: 50,
+            stages: [
+                { duration: '10s', target: 2  }, // ramp up: 0 → 2 user/detik
+                { duration: '30s', target: 2  }, // steady: 2 user/detik selama 30s
+                { duration: '10s', target: 0  }, // ramp down
+            ],
         },
     };
 
