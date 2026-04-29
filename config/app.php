@@ -99,6 +99,10 @@ return [
 
     'key' => env('APP_KEY'),
 
+    // Secret key untuk load test endpoint (/loadtest/*).
+    // Set di .env untuk mengaktifkan. Kosongkan untuk menonaktifkan (default di production).
+    'loadtest_secret' => env('LOADTEST_SECRET', ''),
+
     'previous_keys' => [
         ...array_filter(
             explode(',', env('APP_PREVIOUS_KEYS', ''))

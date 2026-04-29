@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\LoadTestController;
 use App\Http\Controllers\ParticipantLeaveController;
 use App\Http\Controllers\PrepareQuizController;
 use App\Livewire\AdminLogin;
@@ -35,6 +36,15 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/quizzes/{quiz}/prepare', [PrepareQuizController::class, 'store'])->name('quizzes.prepare');
 
     Route::get('/sessions/{session}', RunSession::class)->name('sessions.show');
+});
+
+// ── Load Test Endpoints (protected by X-Loadtest-Secret header) ─────────────
+// Aktifkan dengan set LOADTEST_SECRET di .env. Kosongkan untuk menonaktifkan.
+Route::middleware('loadtest')->prefix('loadtest')->group(function () {
+    Route::get('/questions/{code}',              [LoadTestController::class, 'questions']);
+    Route::post('/join/{code}',                  [LoadTestController::class, 'join']);
+    Route::post('/answer/{code}/{participantId}', [LoadTestController::class, 'answer']);
+    Route::delete('/cleanup/{code}',             [LoadTestController::class, 'cleanup']);
 });
 
 Route::get('/q/{code}', JoinQuiz::class)->name('participant.join');
