@@ -110,12 +110,14 @@ function buildScenarios() {
         },
 
         // C: Full flow join + answer — test DB + broadcast (butuh LOADTEST_SECRET)
+        // vus: jumlah user simultan. Mulai dari 20, naikkan perlahan.
+        // Dengan delay 5–15s antar soal, 20 VU ≈ beban 20 user nyata bersamaan.
         full_flow: {
             executor: 'per-vu-iterations',
             exec: 'scenarioFullFlow',
-            vus: 50,
+            vus: 20,
             iterations: 1,
-            maxDuration: '3m',
+            maxDuration: '5m',
         },
     };
 
@@ -334,7 +336,7 @@ export function scenarioFullFlow(data) {
         // k6 tidak punya per-VU state selain local variables, jadi kita teruskan
         // participantId langsung ke step berikutnya.
 
-        sleep(randomBetween(0.2, 1.0)); // Simulasi latensi user di waiting room
+        sleep(randomBetween(2, 5)); // Simulasi user baca nama quiz sebelum mulai
 
         // ── Step 2: Jawab semua soal ──────────────────────────────────────────
         group('Answer', () => {
@@ -359,8 +361,9 @@ export function scenarioFullFlow(data) {
                     console.error(`❌ Answer gagal (Q:${qId} P:${participantId}): ${ansRes.status} — ${ansRes.body}`);
                 }
 
-                // Delay realistis antar soal (300–800ms)
-                sleep(randomBetween(0.3, 0.8));
+                // Delay realistis: simulasi user membaca soal (5–15 detik)
+                // Ubah ke 0.3–0.8 untuk stress test ekstrem (bukan simulasi user nyata)
+                sleep(randomBetween(5, 15));
             }
         });
     });
