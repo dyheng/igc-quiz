@@ -13,9 +13,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'admin'      => \App\Http\Middleware\EnsureAdmin::class,
+            'admin'       => \App\Http\Middleware\EnsureAdmin::class,
             'guest.admin' => \App\Http\Middleware\RedirectIfAdmin::class,
-            'loadtest'   => \App\Http\Middleware\EnsureLoadTestSecret::class,
+            'loadtest'    => \App\Http\Middleware\EnsureLoadTestSecret::class,
+        ]);
+
+        // Loadtest endpoints tidak perlu CSRF (dipanggil oleh k6, bukan browser)
+        $middleware->validateCsrfTokens(except: [
+            'loadtest/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
