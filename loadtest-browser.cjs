@@ -7,7 +7,7 @@
  * Alpine.js, Livewire, WebSocket Echo — semua jalan seperti browser asli.
  *
  * ── Install ────────────────────────────────────────────────────
- *   npm install puppeteer puppeteer-cluster
+ *   npm install puppeteer puppeteer-cluster puppeteer-extra puppeteer-extra-plugin-stealth
  *
  * ── Run ────────────────────────────────────────────────────────
  *   # Simulasi 20 user join ke waiting room (tanpa start quiz)
@@ -21,8 +21,12 @@
  *   node loadtest-browser.js --users=3 --phase=full --headed
  */
 
-const { Cluster } = require('puppeteer-cluster');
-const puppeteer    = require('puppeteer');
+const { Cluster }  = require('puppeteer-cluster');
+const puppeteer    = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+
+// Stealth mode: bypass Cloudflare bot detection
+puppeteer.use(StealthPlugin());
 
 // ── Config ────────────────────────────────────────────────────────────────────
 const args = Object.fromEntries(
@@ -36,7 +40,7 @@ const SESSION_CODE  = args['code']        || 'GANTI_KODE_SESI';
 const TOTAL_USERS   = parseInt(args['users']  || '10');
 const PHASE         = args['phase']       || 'join';   // join | full
 const HEADED        = args['headed']      === true || args['headed'] === 'true';
-const JOIN_DELAY_MS = parseInt(args['join-delay'] || '500');  // delay antar user join (ms)
+const JOIN_DELAY_MS = parseInt(args['join-delay'] || '1500');  // delay antar user join (ms)
 
 const JOIN_URL = `${BASE_URL}/q/${SESSION_CODE}`;
 
